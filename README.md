@@ -1,6 +1,7 @@
 # myvue
 
-> first project
+> first project in vue.js
+It is is a todo app that shows list of projects whether completed or pending. Edit, delete and delete todo.
 
 ## Build Setup
 
