@@ -1,6 +1,12 @@
 <template>
-  <div>
-    <myapp v-bind:todos="todos"></myapp>
+  <div id="app">
+    <h1 class="ui dividing centered header">Vue.js Todo App</h1>
+    <div class='ui three column centered grid'>
+      <div class='column'>
+        <myapp v-bind:todos="todos"></myapp>
+        <add-todo v-on:add-todo="addTodo"></add-todo>
+      </div>
+    </div>
   </div>
 
 </template>
@@ -8,6 +14,9 @@
 <script>
 //import component created
 import Myapp from './components/Myapp';
+import Todo from './components/Todo';
+import AddTodo from './components/AddTodo';
+
 export default {
 
   //name of the main component
@@ -16,6 +25,14 @@ export default {
 // register component
   components:{
     Myapp,
+    Todo,
+    AddTodo,
+  },
+  methods: {
+    addTodo(newTodo){
+         this.todos.push(newTodo);
+     
+    }
   },
   // data supplied to main component
   data:function () {

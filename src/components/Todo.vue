@@ -11,6 +11,9 @@
           <span class='right floated edit icon' v-on:click="showForm">
           <i class='edit icon'></i>
         </span>
+        <span class='right floated trash icon' v-on:click="deleteTodo(todo)">
+          <i class='trash icon'></i>
+        </span>
       </div>
     </div>
     <div class="content" v-show="isEditing">
@@ -30,10 +33,10 @@
         </div>
       </div>
     </div>
-    <div class='ui bottom attached green basic button' v-show="!isEditing &&todo.done" disabled>
+    <div class='ui bottom attached green basic button' v-show="!isEditing && todo.done" disabled>
         Completed
     </div>
-    <div class='ui bottom attached red basic button' v-show="!isEditing && !todo.done">
+    <div class='ui bottom attached red basic button' v-on:click="completeTodo(todo)" v-show="!isEditing && !todo.done">
         Pending
     </div>
   </div>
@@ -45,6 +48,7 @@
 export default {
   //passing data to props property
 props:['todo'],
+
 data:function(){
   return{
   //set editing to false to hide it unless clicked
@@ -62,7 +66,16 @@ methods:{
   hideForm(){
     this.isEditing=false;
   },
+  // delete a todo
+  deleteTodo(todo) {
+      this.$emit('delete-todo', todo);
+    },
+ // complete todo
+  completeTodo(todo){
+   this.$emit('complete-todo', todo);
+  }
 },
 };
+// end of method
 </script>
 
