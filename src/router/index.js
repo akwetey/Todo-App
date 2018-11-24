@@ -5,11 +5,11 @@ import Myapp from '@/components/Myapp'
 Vue.use(Router)
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'Myapp',
-      component: Myapp
-    }
-  ]
+    routes: [
+        {
+            path: '/',
+            name: 'Myapp',
+            component: Myapp
+        }
+    ]
 })
