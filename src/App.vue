@@ -3,12 +3,14 @@
         <h1 class="ui dividing centered header">Vue.js Todo App</h1>
         <div class='ui three column centered grid'>
             <div class='column'>
+
+                <add-todo v-on:add-todo="addTodo"></add-todo>
                 <myapp v-bind:todos="todos"
                        v-on:delete-todo="deleteTodo"
                        v-on:complete-todo="completeTodo">
                 </myapp> <!-- v-on: listening for the events -->
 
-                <add-todo v-on:add-todo="addTodo"></add-todo>
+
             </div>
         </div>
     </div>
@@ -16,8 +18,8 @@
 </template>
 
 <script>
-    //import component created
-    const API_URL = 'http://localhost:8001/api';
+
+    import {API_URL} from '../config/dev.env.js';
     import Myapp from './components/Myapp';
     import Todo from './components/Todo';
     import AddTodo from './components/AddTodo';
@@ -26,11 +28,7 @@
     import axios from 'axios';
 
     export default {
-
-        //name of the main component
         name: 'App',
-
-// register component
         components: {
             Myapp,
             Todo,
@@ -38,18 +36,23 @@
         },
         methods: {
             addTodo(newTodo) {
+                let _self = this;
                 axios.post(API_URL + '/save_todo', {
                     data: newTodo
                 }).then(function (response) {
-                        console.log(response);
-                    })
-                    .catch(function (error) {
-                        console.log(error);
-                    });
-                TodoStore.commit('Add', newTodo)
+                    axios.get(API_URL + '/todo_list')
+                        .then(function (response) {
+                            TodoStore.commit('Load', response.data);
+                            _self.todos = TodoStore.state.todos;
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
+                }).catch(function (error) {
+                    console.log(error);
+                });
             },
-            // delete method
             deleteTodo(todo) {
+                let _self = this;
                 this.$swal({
                     title: 'Are you sure?',
                     text: 'You can\'t revert your action',
@@ -60,22 +63,21 @@
                     cancelButtonText: 'No, Keep it!',
                     showCloseButton: true,
                 }).then((result) => {
-
                     if (result.value) {
-
-                        axios.post(API_URL + '/todo_list',{
-                            data:todo
-                        })
-                            .then(function (response) {
-                                //TodoStore.commit('Load', response.data)
-                                _self.todos = TodoStore.state.todos;
-                                console.log(response.data);
-                            })
-                            .catch(function (error) {
-                                console.log(error);
-                            });
-                        // const todoIndex = this.todos.indexOf(todo);
-                        // this.todos.splice(todoIndex, 1)
+                        axios.post(API_URL + '/delete_todo', {
+                            data: todo
+                        }).then(function (response) {
+                            TodoStore.commit('Delete', todo);
+                            axios.get(API_URL + '/todo_list')
+                                .then(function (response) {
+                                    TodoStore.commit('Load', response.data);
+                                    _self.todos = TodoStore.state.todos;
+                                }).catch(function (error) {
+                                    console.log(error);
+                                });
+                        }).catch(function (error) {
+                            console.log(error);
+                        });
                         this.$swal('Deleted!', 'Your Todo has been deleted', 'success')
                     } else {
                         this.$swal('Canceled', 'Your Todo is still in place', 'info')
@@ -83,34 +85,43 @@
 
                 });
             },
-            //complete method
             completeTodo(todo) {
+                let _self = this;
                 const todoIndex = this.todos.indexOf(todo);
                 this.todos[todoIndex].done = true;
-                this.$swal('Success', 'Todo Completed!', 'success');
+                this.$swal('Success', 'Todo Completed!', 'success').then((result)=>{
+                    axios.post(API_URL + '/complete_todo', {
+                        data: todo
+                    }).then(function (response) {
+                        axios.get(API_URL + '/todo_list')
+                            .then(function (response) {
+                                TodoStore.commit('Load', response.data);
+                                _self.todos = TodoStore.state.todos;
+                                todo.is_complete=1;
+                            }).catch(function (error) {
+                            console.log(error);
+                        });
+                        }).catch(function (error) {
+                        console.log(error);
+                    });
+                });
             },
         },
-        // data supplied to main component
-        data: function () {
-            //return an array of data
+        data() {
             return {
                 todos: [],
             }
-
         },
         mounted() {
-            var _self =this;
+            var _self = this;
             axios.get(API_URL + '/todo_list')
                 .then(function (response) {
-                    TodoStore.commit('Load', response.data)
+                    TodoStore.commit('Load', response.data);
                     _self.todos = TodoStore.state.todos;
-                    console.log(response.data);
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
-
-
         }
     };
 </script>
