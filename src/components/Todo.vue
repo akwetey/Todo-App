@@ -27,17 +27,17 @@
                     <input type='text' v-model.trim="todo.project">
                 </div>
                 <div class='ui two button attached buttons'>
-                    <button class='ui basic blue button' v-on:click="hideForm">
+                    <button class='ui basic blue button' v-on:click="hideForm(todo)">
                         Close X
                     </button>
                 </div>
             </div>
         </div>
-        <div class='ui bottom attached green basic button' v-show="!isEditing && todo.done" disabled>
+        <div class='ui bottom attached green basic button' v-show="!isEditing && todo.is_complete" disabled>
             Completed
         </div>
         <div class='ui bottom attached red basic button' v-on:click="completeTodo(todo)"
-             v-show="!isEditing && !todo.done">
+             v-show="!isEditing && !todo.is_complete">
             Pending
         </div>
     </div>
@@ -45,33 +45,36 @@
 </template>
 
 
+
 <script>
+    import axios from 'axios';
+    import {API_URL} from '../../config/dev.env.js';
+    import TodoStore from '../store/TodoStore';
     export default {
-        //passing data to props property
         props: ['todo'],
-
-        data: function () {
+        data() {
             return {
-                //set editing to false to hide it unless clicked
                 isEditing: false,
-
             };
         },
         methods: {
-            // display form when the edit button is clicked
             showForm() {
                 this.isEditing = true;
-
             },
-            // close form when done with editing
-            hideForm() {
+            hideForm(todo) {
                 this.isEditing = false;
+                let _self = this;
+                axios.post(API_URL + '/update_todo', {
+                    data: todo
+                }).then(function (response) {
+                        _self.todos = TodoStore.state.todos;
+                }).catch(function (error) {
+                        console.log(error);
+                });
             },
-            // delete a todo
             deleteTodo(todo) {
                 this.$emit('delete-todo', todo);
             },
-            // complete todo
             completeTodo(todo) {
                 this.$emit('complete-todo', todo);
             }

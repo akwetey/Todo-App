@@ -1,7 +1,7 @@
 <template>
     <div>
-        <p class="tasks">Completed Tasks: {{todos.filter(todo => {return todo.done === true}).length}}</p>
-        <p class="tasks">Pending Tasks: {{todos.filter(todo => {return todo.done === false}).length}}</p>
+        <p class="tasks">Completed Tasks: {{completed_count}}</p>
+        <p class="tasks">Pending Tasks: {{pending_count}} </p>
         <todo
                 v-on:delete-todo="$emit('delete-todo', todo)"
                 v-on:complete-todo="$emit('complete-todo', todo)"
@@ -13,21 +13,26 @@
 
 
 <script>
-    //import component todo
+
     import Todo from './Todo';
+    import TodoStore from '../store/TodoStore';
+
 
     export default {
-        // name of component created
         name: 'Myapp',
-        // passing todos property from parent component to child
         props: ['todos'],
-        //register component todo
         components: {
             Todo,
         },
-        methods: {},
+        computed:{
+            completed_count(){
+                return TodoStore.state.completed_count;
+            },
+            pending_count(){
+                return TodoStore.state.pending_count;
+            }
+        }
     };
-    //end of method
 </script>
 
 <style scoped>
