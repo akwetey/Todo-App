@@ -28,7 +28,7 @@
                 </div>
                 <div class='ui two button attached buttons'>
                     <button class='ui basic blue button' v-on:click="hideForm(todo)">
-                        Close X
+                        Edit
                     </button>
                 </div>
             </div>
@@ -61,23 +61,17 @@
             showForm() {
                 this.isEditing = true;
             },
-            hideForm(todo) {
-                this.isEditing = false;
-                let _self = this;
-                axios.post(API_URL + '/update_todo', {
-                    data: todo
-                }).then(function (response) {
-                        _self.todos = TodoStore.state.todos;
-                }).catch(function (error) {
-                        console.log(error);
-                });
-            },
             deleteTodo(todo) {
                 this.$emit('delete-todo', todo);
+            },
+            hideForm(todo){
+               this.isEditing = false;
+               this.$emit('hide-form', todo);
             },
             completeTodo(todo) {
                 this.$emit('complete-todo', todo);
             }
+
         },
     };
     // end of method

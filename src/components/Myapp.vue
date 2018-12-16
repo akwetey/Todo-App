@@ -5,6 +5,7 @@
         <todo
                 v-on:delete-todo="$emit('delete-todo', todo)"
                 v-on:complete-todo="$emit('complete-todo', todo)"
+                v-on:hide-form="$emit('hide-form', todo)"
                 v-for="todo in todos" :key="todo.id"
                 v-bind:todo="todo">
         </todo>

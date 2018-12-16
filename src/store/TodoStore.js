@@ -22,6 +22,7 @@ const TodoStore = new Vuex.Store({
                 } else if (key.is_complete === 0) {
                     state.pending_count++;
                 }
+                console.log('key');
             });
             state.todos = data;
         },
