@@ -7,7 +7,8 @@
                 <add-todo v-on:add-todo="addTodo"></add-todo>
                 <myapp v-bind:todos="todos"
                        v-on:delete-todo="deleteTodo"
-                       v-on:complete-todo="completeTodo">
+                       v-on:complete-todo="completeTodo"
+                       v-on:hide-form="hideForm">
                 </myapp> <!-- v-on: listening for the events -->
 
 
@@ -85,6 +86,20 @@
 
                 });
             },
+              hideForm(todo) {
+                this.isEditing = false;
+                let _self = this;
+                this.$swal('Success', 'Todo Updated!', 'success').then((result)=>{
+                axios.post(API_URL + '/update_todo', {
+                    data: todo
+                }).then(function (response) {
+                        _self.todos = TodoStore.state.todos;
+                }).catch(function (error) {
+                        console.log(error);
+                });
+              });
+            },
+
             completeTodo(todo) {
                 let _self = this;
                 const todoIndex = this.todos.indexOf(todo);
