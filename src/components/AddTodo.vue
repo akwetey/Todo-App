@@ -37,8 +37,8 @@
                 projectText: '',
                 isCreating: false,
 
-
             };
+
         },
         methods: {
             //open form method
@@ -65,6 +65,7 @@
                 // sweetalert after creating a todo
                 this.$swal('Success!', 'New To-Do created!', 'success');
             },
+           
         },
 
     };

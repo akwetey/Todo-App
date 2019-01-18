@@ -1,4 +1,5 @@
 <template>
+<div>
     <div class='ui centered card'>
         <div class="content" v-show="!isEditing">
             <div class='header'>
@@ -41,6 +42,8 @@
             Pending
         </div>
     </div>
+       
+  </div>
 
 </template>
 
