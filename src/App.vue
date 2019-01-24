@@ -13,6 +13,17 @@
 
             </div>
         </div>
+<!--         <Pagination v-bind:totalPages="totalPages" 
+        v-bind:total="total"
+        v-bind:currentPage="currentPage"  /> -->
+
+        <Pagination
+   :total-pages="totalPages"
+   :total="total"
+   :per-page="perPage"
+   :current-page="currentPage"
+   @pagechanged="onPageChange"
+ />
     </div>
 
 </template>
@@ -26,13 +37,14 @@
     import TodoStore from './store/TodoStore';
 
     import axios from 'axios';
-
+    import Pagination from './components/pagination';
     export default {
         name: 'App',
         components: {
             Myapp,
             Todo,
             AddTodo,
+            Pagination
         },
         methods: {
             addTodo(newTodo) {
@@ -42,7 +54,7 @@
                 }).then(function (response) {
                     axios.get(API_URL + '/todo_list')
                         .then(function (response) {
-                            TodoStore.commit('Load', response.data);
+                            TodoStore.commit('Load', response.data.data);
                             _self.todos = TodoStore.state.todos;
                         }).catch(function (error) {
                             console.log(error);
@@ -70,7 +82,7 @@
                             TodoStore.commit('Delete', todo);
                             axios.get(API_URL + '/todo_list')
                                 .then(function (response) {
-                                    TodoStore.commit('Load', response.data);
+                                    TodoStore.commit('Load', response.data.data);
                                     _self.todos = TodoStore.state.todos;
                                 }).catch(function (error) {
                                     console.log(error);
@@ -95,7 +107,7 @@
                     }).then(function (response) {
                         axios.get(API_URL + '/todo_list')
                             .then(function (response) {
-                                TodoStore.commit('Load', response.data);
+                                TodoStore.commit('Load', response.data.data);
                                 _self.todos = TodoStore.state.todos;
                                 todo.is_complete=1;
                             }).catch(function (error) {
@@ -106,17 +118,43 @@
                     });
                 });
             },
+                onPageChange(page) {
+      console.log(page)
+      this.currentPage = page;
+
+      var _self = this;
+            axios.get(API_URL + '/todo_list?page='+page)
+                .then(function (response) {
+                    _self.totalPages     = response.data.last_page;
+                    _self.per_page     =response.data.per_page;
+                    _self.currentPage   =response.data.current_page;
+                    _self.total             =response.data.total;
+                    TodoStore.commit('Load', response.data.data);
+                    _self.todos = TodoStore.state.todos;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+    }
         },
         data() {
             return {
                 todos: [],
+                totalPages:0,
+                currentPage:1,
+                total:1,
+                perPage:5
             }
         },
         mounted() {
             var _self = this;
             axios.get(API_URL + '/todo_list')
                 .then(function (response) {
-                    TodoStore.commit('Load', response.data);
+                    _self.totalPages     = response.data.last_page;
+                    _self.per_page     =response.data.per_page;
+                    _self.currentPage   =response.data.current_page;
+                    _self.total             =response.data.total;
+                    TodoStore.commit('Load', response.data.data);
                     _self.todos = TodoStore.state.todos;
                 })
                 .catch(function (error) {
